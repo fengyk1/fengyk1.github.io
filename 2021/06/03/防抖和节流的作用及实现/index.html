@@ -51,7 +51,15 @@
 <h2 id="函数防抖"><a href="#函数防抖" class="headerlink" title="函数防抖"></a>函数防抖</h2><blockquote>
 <p>事件被触发n秒后执行回调，如果执行期间触发，将重新计时</p>
 </blockquote>
+<ul>
+<li>根据以上规则我们来编写一个防抖函数</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">debounce</span>(<span class="params">fn,delay</span>)</span>&#123;</span><br><span class="line">  <span class="keyword">var</span> timer = <span class="literal">null</span>;</span><br><span class="line">  <span class="keyword">var</span> _this = <span class="built_in">this</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> args = [].slice.apply(<span class="built_in">arguments</span>)</span><br><span class="line">    <span class="keyword">if</span> (timer)&#123;</span><br><span class="line">      <span class="built_in">clearTimeout</span>(timer)</span><br><span class="line">    &#125;</span><br><span class="line">    timer = <span class="built_in">setTimeout</span>(<span class="function">()=&gt;</span>&#123;</span><br><span class="line">      fn.apply(_this, args)</span><br><span class="line">    &#125;,delay)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> test = debounce(<span class="function">()=&gt;</span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="number">1111</span>)</span><br><span class="line">&#125;,<span class="number">1000</span>)</span><br><span class="line">test()</span><br></pre></td></tr></table></figure>
 
+<h2 id="函数节流"><a href="#函数节流" class="headerlink" title="函数节流"></a>函数节流</h2><blockquote>
+<p>节流是在执行函数的时候每隔一定的事件，只执行一次</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">throttle</span>(<span class="params">fn,delay</span>)</span>&#123;</span><br><span class="line">  <span class="keyword">var</span> timer = <span class="literal">null</span>;</span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> _this = <span class="built_in">this</span></span><br><span class="line">    <span class="keyword">var</span> args = <span class="built_in">arguments</span></span><br><span class="line">    <span class="keyword">if</span> (!timer)&#123;</span><br><span class="line">      timer = <span class="built_in">setTimeout</span>(<span class="function">()=&gt;</span>&#123;</span><br><span class="line">        fn.apply(_this,args);</span><br><span class="line">        timer = <span class="literal">null</span>;</span><br><span class="line">      &#125;,delay)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> test = throttle(<span class="function">()=&gt;</span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">&#x27;5秒只执行一次&#x27;</span>)</span><br><span class="line">&#125;,<span class="number">5000</span>)</span><br><span class="line"></span><br><span class="line">test()</span><br></pre></td></tr></table></figure>
     </div>
     </article>
 </div>
@@ -61,7 +69,7 @@
         Contents
         </strong>
         <div class="toc-content">
-            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96"><span class="toc-text">函数防抖</span></a></li></ol>
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E9%98%B2%E6%8A%96"><span class="toc-text">函数防抖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E8%8A%82%E6%B5%81"><span class="toc-text">函数节流</span></a></li></ol>
         </div>
     </div>
 
@@ -71,6 +79,8 @@
     <nav class="post-nav">
         
             <div class="page-tags">
+                
+                    <a href="/tags/javascript/">javascript</a>
                 
             </div>
         
