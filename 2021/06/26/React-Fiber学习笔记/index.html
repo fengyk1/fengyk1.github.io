@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>React Fiber学习笔记 | Hexo</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.2.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="title">
+    <a href="#" class="logo">Hexo</a>
+</div>
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">Home</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">Archives</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">About</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        React Fiber学习笔记
+    </div>
+    <p class="sub">Jun 26 2021</p>
+    <div class="post-content">
+        <p>Fiber笔记</p>
+<ul>
+<li><p>fiber是一个调度，在浏览器处理完js，媒体查询，事件等操作后如果有空闲时间会把时间让出来让react去使用，执行自己的任务</p>
+</li>
+<li><p>fiber也是一种数据结构，子元素有一个指针指向父元素，兄弟元素之前也有相互的指针</p>
+</li>
+<li><p>fiber是通过requestAnimationFrame和MessageChannel进行模拟实现的requestIdleCallback</p>
+</li>
+</ul>
+<p>Fiber架构有两个主要阶段：</p>
+<ul>
+<li>Reconciliation/render阶段和commit阶段。在源码中，大部分地方都会把”reconciliation阶段”成为”render阶段”。就是在render阶段里面，react遍历了组件树，并且做了以下这些事情<ul>
+<li>更新state和props</li>
+<li>调用生命周期函数</li>
+<li>通过调用render方法，从组件中获取children</li>
+<li>把获取到的children跟之前的children相比</li>
+<li>最后计算出需要执行的DOM操作是什么</li>
+</ul>
+</li>
+</ul>
+<p>在fiber架构中，所有的这些activity都成为”work”。一个fiber node需要做什么样的work取决于其对应的react element是什么类型。比如，对于一个class component而言，React需要做的work就是实例化这个组件。而对于functional component来说，他没有这样的work需要去完成。</p>
+<p>​    </p>
+<h2 id="requestAnimationFrame"><a href="#requestAnimationFrame" class="headerlink" title="requestAnimationFrame"></a>requestAnimationFrame</h2><ul>
+<li>每一帧执行前会执行这个方法</li>
+<li>requestAnimationFrame属于高优先级任务</li>
+</ul>
+<h2 id="requestIdleCallback"><a href="#requestIdleCallback" class="headerlink" title="requestIdleCallback"></a>requestIdleCallback</h2><ul>
+<li>每一帧执行完成后有空余时间才会执行，不一定每一帧都会执行，属于低优先级任务</li>
+<li>浏览器很长时间没有执行其他任务，那么idlecallback时间会延长，最长是50ms</li>
+</ul>
+<h2 id="MessageChannel"><a href="#MessageChannel" class="headerlink" title="MessageChannel"></a>MessageChannel</h2><ul>
+<li>requestIdleCallback目前只有chrome支持</li>
+<li>所以目前React利用MessageChannel模拟了requestIdleCallback，将回调延迟到绘制之后执行</li>
+<li>MessageChannel API运行我们创建一个新的消息通道，并通过它的两个MessagePort属性发送数据</li>
+<li>MessageChannel创建了一个通信的管道，这个管道有两个端口，每个端口都可以通过postMessage发送数据，而一个端口只要绑定了onmessage回调方法，就可以接收到信息</li>
+<li>MessageChannel是一个宏任务</li>
+</ul>
+<p>例如:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> channel = <span class="keyword">new</span> MessageChannel()</span><br><span class="line"><span class="keyword">let</span> port1 = channel.port1</span><br><span class="line"><span class="keyword">let</span> port2 = channel.port2</span><br><span class="line"></span><br><span class="line">port1.onmessage = <span class="function"><span class="keyword">function</span>(<span class="params">event</span>)</span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">&#x27;port1收到来自port2的数据&#x27;</span>,event.data)</span><br><span class="line">&#125;</span><br><span class="line">port2.onmessage = <span class="function"><span class="keyword">function</span>(<span class="params">event</span>)</span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">&#x27;port2收到来自port1的数据&#x27;</span>,event.data)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// postMessage是一个宏任务，在渲染之后执行的</span></span><br><span class="line">port1.postMessage(<span class="string">&#x27;发送给port2&#x27;</span>)</span><br><span class="line">port1.postMessage(<span class="string">&#x27;发送给port1&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        Contents
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#requestAnimationFrame"><span class="toc-text">requestAnimationFrame</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#requestIdleCallback"><span class="toc-text">requestIdleCallback</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MessageChannel"><span class="toc-text">MessageChannel</span></a></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/javascript/">javascript</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+        
+            <a class="next" href="/2021/06/23/js%E6%A8%A1%E5%9D%97%E5%8C%96%E7%AC%94%E8%AE%B0/">
+                
+                <span class="prev-text">js模块化笔记</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+    
+<script src="/js/scroll.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+</html>
