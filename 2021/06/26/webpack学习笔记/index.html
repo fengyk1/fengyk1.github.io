@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+<title>webpack学习笔记 | Hexo</title>
+
+
+<link rel="stylesheet" href="/styles/main.css">
+
+
+    <meta name="generator" content="Hexo 5.2.0"></head>
+    <body>
+        <div class="container">
+            <header>
+<div class="main">
+<div class="title">
+    <a href="#" class="logo">Hexo</a>
+</div>
+<div class="site-nav">
+    <ul id="menu" class="menu">
+    
+        <li class="menu-item text-underline">
+            <a href="/">Home</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/archives">Archives</a>
+        </li>
+    
+        <li class="menu-item text-underline">
+            <a href="/about/">About</a>
+        </li>
+            
+    </ul>
+</div>
+</div>
+</header>
+            <main class="main">
+                <section class="posts clearfix">
+<div class="post-wrapper">
+    <article class="post article-entry">
+    <div class="post-title">
+        webpack学习笔记
+    </div>
+    <p class="sub">Jun 26 2021</p>
+    <div class="post-content">
+        <h2 id="webpack构建流程"><a href="#webpack构建流程" class="headerlink" title="webpack构建流程"></a>webpack构建流程</h2><p>webpack的运行流程是一个串行的过程，从启动到结束会依次执行以下流程：首先会从配置文件和Shell渔具中读取与合并参数，并初始化需要使用的插件和配置插件等执行环境所需要的参数；初始化完成后悔调用Compiler的run来真正启动webpack编译构建过程，webpack的构建流程包括compile、make、build、seal、emit阶段，执行完这些阶段就完成了构建过程。</p>
+<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><h5 id="entry-options启动"><a href="#entry-options启动" class="headerlink" title="entry-options启动"></a>entry-options启动</h5><p>从配置文件和Shell渔具中读取与合并参数，得出最终的参数。</p>
+<h5 id="run实例化"><a href="#run实例化" class="headerlink" title="run实例化"></a>run实例化</h5><p>Compiler:用上一步得到的参数初始化Compiler对象，加载所有配置的插件，执行对象的run方法开始执行编译</p>
+<h5 id="编译构建"><a href="#编译构建" class="headerlink" title="编译构建"></a>编译构建</h5><h5 id="entry-确定入口"><a href="#entry-确定入口" class="headerlink" title="entry 确定入口"></a>entry 确定入口</h5><p>根据配置中的entry找出所有的入口文件</p>
+<h5 id="make-编译模块"><a href="#make-编译模块" class="headerlink" title="make 编译模块"></a>make 编译模块</h5><p>从入口文件触发，调用所有配置的Loader对模块进行翻译，再找出该模块依赖的模块，再地柜本步骤直到所有入口依赖的文件都经过了本步骤处理</p>
+<h5 id="seal-输出资源"><a href="#seal-输出资源" class="headerlink" title="seal 输出资源"></a>seal 输出资源</h5><p>根据入口和模块之前的依赖关系，组装一个个包含多个模块的Chunk，再把每个Chunk转换成一个单独的文件加入到输出列表，这步是可以修改输出的内容的最后机会</p>
+<h5 id="输出完成"><a href="#输出完成" class="headerlink" title="输出完成"></a>输出完成</h5><p>在确定好输出内容后，根据配置确定输出的路径和文件名，把文件内容写入到文件系统</p>
+
+    </div>
+    </article>
+</div>
+
+    <div class="_toc">
+        <strong class="toc-title">
+        Contents
+        </strong>
+        <div class="toc-content">
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#webpack%E6%9E%84%E5%BB%BA%E6%B5%81%E7%A8%8B"><span class="toc-text">webpack构建流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-text">初始化</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#entry-options%E5%90%AF%E5%8A%A8"><span class="toc-text">entry-options启动</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#run%E5%AE%9E%E4%BE%8B%E5%8C%96"><span class="toc-text">run实例化</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E6%9E%84%E5%BB%BA"><span class="toc-text">编译构建</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#entry-%E7%A1%AE%E5%AE%9A%E5%85%A5%E5%8F%A3"><span class="toc-text">entry 确定入口</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#make-%E7%BC%96%E8%AF%91%E6%A8%A1%E5%9D%97"><span class="toc-text">make 编译模块</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#seal-%E8%BE%93%E5%87%BA%E8%B5%84%E6%BA%90"><span class="toc-text">seal 输出资源</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%BE%93%E5%87%BA%E5%AE%8C%E6%88%90"><span class="toc-text">输出完成</span></a></li></ol></li></ol></li></ol></li></ol>
+        </div>
+    </div>
+
+</section>
+
+
+    <nav class="post-nav">
+        
+            <div class="page-tags">
+                
+                    <a href="/tags/javascript/">javascript</a>
+                
+            </div>
+        
+    </nav>
+
+
+
+    <nav class="paginator clearfix">
+        
+        
+            <a class="next" href="/2021/06/26/React-Fiber%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+                
+                <span class="prev-text">React Fiber学习笔记</span>
+                <i class="iconfont icon-right"></i>
+            </a>
+        
+    </nav>
+
+
+            </main>
+            <div class="copyright">
+  <div class="text">Powered By
+    <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a> | Theme <a target="_blank" rel="noopener" href="https://github.com/zjx137/hexo-theme-Tsu">Tsu</a> &copy 2019
+  </div>
+</div>
+
+        </div>
+    <div class="back-to-top" id="back-to-top">
+            <i class="iconfont icon-up"></i>
+    </div>
+        
+    </body>
+    
+<script src="/js/jquery-3.3.1.min.js"></script>
+
+    
+<script src="/js/back-to-top.js"></script>
+
+    
+<script src="/js/scroll.js"></script>
+
+    <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+</html>
